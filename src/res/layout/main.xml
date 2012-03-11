@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:id="@+id/widget27"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remote user id" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/edit_uri"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="+491789999999" >
+        </EditText>
+
+        <RadioGroup
+            android:id="@+id/radioGroup1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Packet Size (byte)" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/edit_packetsize"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="512" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Packet intervall (ms)" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/edit_packetintervall"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="32" >
+        </EditText>
+
+        <LinearLayout
+            android:id="@+id/bla"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/btn_open"
+                android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Open" >
+            </Button>
+
+            <Button
+                android:id="@+id/btn_accept"
+                android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Accept" >
+            </Button>
+
+            <Button
+                android:id="@+id/btn_reject"
+                android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reject" >
+            </Button>
+
+            <Button
+                android:id="@+id/btn_close"
+                android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Close" >
+            </Button>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/edComm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+        </EditText>
+
+        <LinearLayout
+            android:id="@+id/llControls"
+            
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:onClick="doBaam"
+                android:layout_weight="1.0"
+                android:tag="1" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1" >
+            </Button>
+
+            <Button
+                android:onClick="doBaam"
+                android:layout_weight="1.0"
+                android:tag="2" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2" >
+            </Button>
+
+            <Button
+                android:onClick="doBaam"
+                android:layout_weight="1.0"
+                android:tag="3" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3" >
+            </Button>
+
+            <Button
+                android:onClick="doBaam"
+                android:layout_weight="1.0"
+                android:tag="4" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4" >
+            </Button>
+
+            <Button
+                android:onClick="doBaam"
+                android:layout_weight="1.0"
+                android:tag="5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5" >
+            </Button>
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

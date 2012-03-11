@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">JibeLizardspock</string>
+    <string name="remote_user_hint">Phone number or SIP URI</string>
+
+</resources>
