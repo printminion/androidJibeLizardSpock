@@ -9,7 +9,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.Random;
+
+import com.kupriyanov.jibe.lizardspock.LizardSpockActivity.OnDataTransferListener;
 
 import jibe.sdk.client.simple.session.DatagramSocketConnection;
 
@@ -17,8 +20,8 @@ import android.os.Environment;
 import android.util.Log;
 
 public class DummyPacketGenerator {
-	private static final String LOG_TAG = "JIBE_SDK_DATAGRAMSOCKET_DEMO_DUMMYPACKETSENDERRECEIVER";
-	
+	private static final String LOG_TAG = "DUMMYPACKETSENDERRECEIVER";
+
 	private boolean mIsSender = false;
 
 	private boolean mDoSending = false;
@@ -26,23 +29,25 @@ public class DummyPacketGenerator {
 
 	private boolean mDoReceiving = false;
 	private Thread receiverThread;
-	
+
 	private DatagramSocketConnection mConnection;
-	
+
+	private static OnDataTransferListener mOnDataTransferListener;
+
 	public void stop() {
 		mDoSending = false;
 		mDoReceiving = false;
 		mIsSender = false;
 	}
-	
+
 	public void setIsSender(boolean isSender) {
 		this.mIsSender = isSender;
 	}
-	
+
 	public void setConnection(DatagramSocketConnection connection) {
 		this.mConnection = connection;
 	}
-	
+
 	public void startSendingPackets(final int packetSize, final int delay) {
 		Log.d("JIBE_SDK_DEMO", "Start sending packets");
 
@@ -94,11 +99,13 @@ public class DummyPacketGenerator {
 			@Override
 			public void run() {
 
-				BufferedWriter writer = null;
+				// BufferedWriter writer = null;
 				try {
 
-					writer = new BufferedWriter(
-							new OutputStreamWriter(new FileOutputStream(new File(Environment.getExternalStorageDirectory(), "timing.txt)"))));
+					// writer = new BufferedWriter(new OutputStreamWriter(
+					// new FileOutputStream(new File(Environment
+					// .getExternalStorageDirectory(),
+					// "timing.txt)"))));
 
 					byte[] receiveBuffer = new byte[8192];
 
@@ -113,12 +120,17 @@ public class DummyPacketGenerator {
 							break;
 						}
 
+						Log.i(LOG_TAG, "receiveBuffer:" + Arrays.copyOfRange(receiveBuffer, 0, i).toString());
+
 						if (i == 2) {
-							Log.i(LOG_TAG, "Received pin holing package");
+							Log.i(LOG_TAG, "Received pin holing package:");
 							continue;
 						}
 
-						Log.i(LOG_TAG, "Packet received! Payload: payload size: " + i);
+						Log.i(LOG_TAG,
+								"Packet received! Payload: payload size: " + i);
+						mOnDataTransferListener.onDataRecieved(Arrays
+								.copyOfRange(receiveBuffer, 8, i));
 
 						if (mIsSender) {
 							ByteArrayInputStream bis = new ByteArrayInputStream(receiveBuffer);
@@ -128,17 +140,24 @@ public class DummyPacketGenerator {
 								long current = System.currentTimeMillis();
 								long roundtripTime = current - timeStamp;
 
-								Log.i(LOG_TAG, "Roundtrip time was " + roundtripTime);
+								Log.i(LOG_TAG, "Roundtrip time was "
+										+ roundtripTime);
 
-								writer.write("" + roundtripTime);
+								// writer.write("" + roundtripTime);
 
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
 
 						} else {
-							Log.i(LOG_TAG, "Sending echo packet! Payload: payload size: " + i);
+							Log.i(LOG_TAG,
+									"Sending echo packet! Payload: payload size: "
+											+ i);
 							try {
+								receiveBuffer[8] = (byte) (receiveBuffer[8] + 1);
+								receiveBuffer[9] = (byte) (receiveBuffer[8] + 1);
+								receiveBuffer[10] = (byte) (receiveBuffer[8] + 1);
+								
 								mConnection.send(receiveBuffer, 0, i);
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -150,8 +169,8 @@ public class DummyPacketGenerator {
 					e.printStackTrace();
 				} finally {
 					try {
-						writer.flush();
-						writer.close();
+						// writer.flush();
+						// writer.close();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -161,18 +180,27 @@ public class DummyPacketGenerator {
 		});
 		receiverThread.start();
 	}
-	
+
 	private static byte[] generatePacket(int size) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream(size);
 		DataOutputStream dos = new DataOutputStream(bos);
 
-		byte[] padding = new byte[size - 8];
-		Random random = new Random(System.nanoTime());
-		random.nextBytes(padding);
+		byte[] padding = null;//new byte[size - 8];
+		// Random random = new Random(System.nanoTime());
+		// random.nextBytes(padding);
+
+		if (mOnDataTransferListener.hasDataToSend()) {
+			padding = mOnDataTransferListener.getDataToSend();
+			mOnDataTransferListener.clearDataToSend();
+		}
 
 		try {
-			dos.writeLong(System.currentTimeMillis());
-			dos.write(padding);
+			if (padding != null) {
+				dos.writeLong(System.currentTimeMillis());
+				dos.write(padding);
+				//dos.writeUTF("test");
+			}
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -180,5 +208,10 @@ public class DummyPacketGenerator {
 
 		return bos.toByteArray();
 	}
-	
+
+	public void setDataTransferListiner(
+			OnDataTransferListener dataTransferListener) {
+		mOnDataTransferListener = dataTransferListener;
+	}
+
 }

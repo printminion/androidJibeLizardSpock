@@ -34,14 +34,14 @@
             android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Packet Size (byte)" >
+            android:text="Remote user id" >
         </TextView>
 
         <EditText
             android:id="@+id/edit_packetsize"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="512" >
+            android:text="16" >
         </EditText>
 
         <TextView
@@ -55,7 +55,7 @@
             android:id="@+id/edit_packetintervall"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="32" >
+            android:text="2500" >
         </EditText>
 
         <LinearLayout
@@ -110,6 +110,7 @@
             android:layout_height="wrap_content" >
 
             <Button
+                android:id="@+id/btn_button1"
                 android:onClick="doBaam"
                 android:layout_weight="1.0"
                 android:tag="1" 
@@ -119,6 +120,7 @@
             </Button>
 
             <Button
+                android:id="@+id/btn_button2"
                 android:onClick="doBaam"
                 android:layout_weight="1.0"
                 android:tag="2" 
@@ -128,6 +130,7 @@
             </Button>
 
             <Button
+                android:id="@+id/btn_button3"
                 android:onClick="doBaam"
                 android:layout_weight="1.0"
                 android:tag="3" 
@@ -137,6 +140,7 @@
             </Button>
 
             <Button
+                android:id="@+id/btn_button4"
                 android:onClick="doBaam"
                 android:layout_weight="1.0"
                 android:tag="4" 
@@ -146,6 +150,7 @@
             </Button>
 
             <Button
+                android:id="@+id/btn_button5"
                 android:onClick="doBaam"
                 android:layout_weight="1.0"
                 android:tag="5"

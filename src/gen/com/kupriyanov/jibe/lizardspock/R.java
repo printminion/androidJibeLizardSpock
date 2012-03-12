@@ -12,11 +12,15 @@ public final class R {
     }
     public static final class drawable {
         public static final int app_logo=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
     }
     public static final class id {
         public static final int bla=0x7f060009;
         public static final int btn_accept=0x7f06000b;
+        public static final int btn_button1=0x7f060010;
+        public static final int btn_button2=0x7f060011;
+        public static final int btn_button3=0x7f060012;
+        public static final int btn_button4=0x7f060013;
+        public static final int btn_button5=0x7f060014;
         public static final int btn_close=0x7f06000d;
         public static final int btn_open=0x7f06000a;
         public static final int btn_reject=0x7f06000c;
@@ -25,7 +29,7 @@ public final class R {
         public static final int edit_packetsize=0x7f060006;
         public static final int edit_uri=0x7f060003;
         public static final int llControls=0x7f06000f;
-        public static final int menu_exit=0x7f060010;
+        public static final int menu_exit=0x7f060015;
         public static final int radioGroup1=0x7f060004;
         public static final int scrollView1=0x7f060000;
         public static final int textView3=0x7f060002;

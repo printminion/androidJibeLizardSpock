@@ -1,6 +1,9 @@
 package com.kupriyanov.jibe.lizardspock;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import com.kupriyanov.jibe.lizardspock.datagramsocket.DummyPacketGenerator;
 
 import jibe.sdk.client.JibeIntents;
 import jibe.sdk.client.events.JibeSessionEvent;
@@ -9,11 +12,8 @@ import jibe.sdk.client.simple.authentication.AuthenticationHelper;
 import jibe.sdk.client.simple.authentication.AuthenticationHelperListener;
 import jibe.sdk.client.simple.session.DatagramSocketConnection;
 
-import com.kupriyanov.jibe.lizardspock.R;
-import com.kupriyanov.jibe.lizardspock.R.layout;
-import com.kupriyanov.jibe.lizardspock.datagramsocket.DatagramSocketConnectionDemo;
-import com.kupriyanov.jibe.lizardspock.datagramsocket.DummyPacketGenerator;
-import com.kupriyanov.jibe.lizardspock.datagramsocket.JibeApplication;
+//import com.kupriyanov.jibe.lizardspock.R;
+//import com.kupriyanov.jibe.lizardspock.datagramsocket.DummyPacketGenerator;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -37,11 +37,11 @@ import android.widget.Toast;
 
 public class LizardSpockActivity extends Activity {
 
-	private static final String API_KEY = "cb87711fe3dc4f5c8fbd5eb84c2dc8b6";
-	private static final String API_SECRET = "964e3bb4e0354da88317c4ef6f0ff432";
+	// private static final String API_KEY = "cb87711fe3dc4f5c8fbd5eb84c2dc8b6";
+	// private static final String API_SECRET =
+	// "964e3bb4e0354da88317c4ef6f0ff432";
 
-	private static final String LOG_TAG = DatagramSocketConnectionDemo.class
-			.getName();
+	private static final String LOG_TAG = LizardSpockActivity.class.getName();
 
 	private EditText mRemoteURIText;
 	private Button mOpenButton;
@@ -49,6 +49,13 @@ public class LizardSpockActivity extends Activity {
 	private Button mRejectButton;
 	private Button mCloseButton;
 	private LinearLayout mLlControls;
+
+	private Button mButton1;
+	private Button mButton2;
+	private Button mButton3;
+	private Button mButton4;
+	private Button mButton5;
+
 	private EditText mEdComm;
 
 	private DummyPacketGenerator mPacketGenerator = new DummyPacketGenerator();
@@ -59,21 +66,29 @@ public class LizardSpockActivity extends Activity {
 
 	private final static int AUTHENTICATING_DIALOG = 1;
 
+	public interface OnDataTransferListener {
+		public abstract void onDataRecieved(byte[] receiveBuffer);
+
+		public abstract boolean hasDataToSend();
+
+		public abstract byte[] getDataToSend();
+
+		public abstract void clearDataToSend();
+
+		public abstract void setValueToSend(String string);
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		
 		mLlControls = (LinearLayout) findViewById(R.id.llControls);
 		mLlControls.setEnabled(false);
 
 		mCloseButton = (Button) findViewById(R.id.btn_close);
 		mCloseButton.setOnClickListener(mButtonClickListener);
 		mCloseButton.setEnabled(false);
-
-		mEdComm = (EditText) findViewById(R.id.edComm);
-		mEdComm.setEnabled(false);
 
 		mOpenButton = (Button) findViewById(R.id.btn_open);
 		mOpenButton.setEnabled(false);
@@ -88,9 +103,28 @@ public class LizardSpockActivity extends Activity {
 		mRejectButton.setEnabled(false);
 
 		mRemoteURIText = (EditText) findViewById(R.id.edit_uri);
-		mRemoteURIText.setText("");
+		// mRemoteURIText.setText("");
 		mRemoteURIText.setHint(R.string.remote_user_hint);
 		mRemoteURIText.setInputType(InputType.TYPE_CLASS_PHONE);
+
+		mButton1 = (Button) findViewById(R.id.btn_button1);
+		mButton1.setEnabled(false);
+
+		mButton2 = (Button) findViewById(R.id.btn_button2);
+		mButton2.setEnabled(false);
+
+		mButton3 = (Button) findViewById(R.id.btn_button3);
+		mButton3.setEnabled(false);
+
+		mButton4 = (Button) findViewById(R.id.btn_button4);
+		mButton4.setEnabled(false);
+
+		mButton5 = (Button) findViewById(R.id.btn_button5);
+		mButton5.setEnabled(false);
+
+		mEdComm = (EditText) findViewById(R.id.edComm);
+		mEdComm.setEnabled(true);
+
 	}
 
 	@Override
@@ -104,7 +138,9 @@ public class LizardSpockActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		try {
-			mConnection.close();
+			if (mConnection != null) {
+				mConnection.close();
+			}
 		} catch (IOException e) {
 			Log.w(LOG_TAG, "Failed to close connection.");
 			e.printStackTrace();
@@ -188,6 +224,13 @@ public class LizardSpockActivity extends Activity {
 		mAcceptButton.setEnabled(false);
 		mRejectButton.setEnabled(false);
 		mOpenButton.setEnabled(true);
+
+		mButton1.setEnabled(false);
+		mButton2.setEnabled(false);
+		mButton3.setEnabled(false);
+		mButton4.setEnabled(false);
+		mButton5.setEnabled(false);
+
 	}
 
 	private void disableUiButtons() {
@@ -249,6 +292,7 @@ public class LizardSpockActivity extends Activity {
 	private void startDummyPacketGeneration() {
 
 		mPacketGenerator.startReceivingPackets();
+		mPacketGenerator.setDataTransferListiner(mOnDataTransferListener);
 
 		runOnUiThread(new Runnable() {
 			@Override
@@ -295,9 +339,13 @@ public class LizardSpockActivity extends Activity {
 			}
 			unregisterReceiver(mReceiver);
 		}
+
+		Log.i(LOG_TAG, "registerReceiver:"
+				+ JibeIntents.ACTION_INCOMING_SESSION + '.'
+				+ LizardSpockApplication.APP_ID);
 		registerReceiver(mReceiver, new IntentFilter(
 				JibeIntents.ACTION_INCOMING_SESSION + '.'
-						+ JibeApplication.APP_ID));
+						+ LizardSpockApplication.APP_ID));
 
 		mConnection = new DatagramSocketConnection(this, mConnStateListener);
 		mPacketGenerator.setConnection(mConnection);
@@ -348,6 +396,48 @@ public class LizardSpockActivity extends Activity {
 		}
 	};
 
+	private OnDataTransferListener mOnDataTransferListener = new OnDataTransferListener() {
+		byte[] padding = null;
+
+		@Override
+		public void onDataRecieved(final byte[] receiveBuffer) {
+			Log.i(LOG_TAG, "onDataRecieved:" + receiveBuffer.toString());
+
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						mEdComm.setText(new String(receiveBuffer));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+				}
+			});
+
+		}
+
+		@Override
+		public boolean hasDataToSend() {
+			return padding != null;
+		}
+
+		@Override
+		public byte[] getDataToSend() {
+			return padding;
+		}
+
+		@Override
+		public void clearDataToSend() {
+			this.padding = null;
+		}
+
+		@Override
+		public void setValueToSend(String str) {
+			this.padding = str.getBytes();
+		}
+	};
+
 	private SimpleConnectionStateListener mConnStateListener = new SimpleConnectionStateListener() {
 
 		@Override
@@ -364,6 +454,18 @@ public class LizardSpockActivity extends Activity {
 		@Override
 		public void onStarted() {
 			Log.v(LOG_TAG, "onStarted()");
+
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					mButton1.setEnabled(true);
+					mButton2.setEnabled(true);
+					mButton3.setEnabled(true);
+					mButton4.setEnabled(true);
+					mButton5.setEnabled(true);
+				}
+			});
+
 			showMessage("Connection started");
 			startDummyPacketGeneration();
 		}
@@ -441,17 +543,25 @@ public class LizardSpockActivity extends Activity {
 					+ failureInfo);
 		}
 	};
-	
-	public void onBaam(View v) {
+
+	public void doBaam(View v) {
 		Button btn = (Button) v;
-		Log.v(LOG_TAG, "onBaam().:" + btn.getTag());
-		
-		if (mConnection != null) {
+		Log.v(LOG_TAG, "doBaam().:" + btn.getTag());
+
+		if (mConnection == null) {
 			return;
 		}
-		
-		
-		
-	}
 
+		// byte[] packet = btn.getTag().toString().getBytes();
+		//
+		// try {
+		// mConnection.send(packet, 0, packet.length);
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
+		mOnDataTransferListener.setValueToSend(btn.getTag().toString());
+
+	}
 }
